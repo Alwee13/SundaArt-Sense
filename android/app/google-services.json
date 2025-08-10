@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "10868495723",
+    "project_id": "sundaart-sense",
+    "storage_bucket": "sundaart-sense.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10868495723:android:002499fbdaf26cc382682e",
+        "android_client_info": {
+          "package_name": "com.example.sundaart_sense"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "10868495723-btsegp9ekdj7m7a40qtrog7o3m1mb9gi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sundaart_sense",
+            "certificate_hash": "115300ff0d125be262dd34b18c21cadc87229471"
+          }
+        },
+        {
+          "client_id": "10868495723-pnj7qsolcnqhs1v5u9mvk5f3uob7627l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkBmJ-APK7rcqyOg0655_WmC3-qck4BCQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "10868495723-pnj7qsolcnqhs1v5u9mvk5f3uob7627l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "10868495723-oee59s9d4sc7nqn0h8t42ispre07ommb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sundaartSense"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

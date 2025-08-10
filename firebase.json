@@ -1,0 +1,38 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "sundaart-sense",
+          "appId": "1:10868495723:android:002499fbdaf26cc382682e",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "sundaart-sense",
+          "configurations": {
+            "android": "1:10868495723:android:002499fbdaf26cc382682e",
+            "ios": "1:10868495723:ios:7ca6500a2e70e93282682e",
+            "macos": "1:10868495723:ios:7ca6500a2e70e93282682e",
+            "web": "1:10868495723:web:9f4c6b359baec1ae82682e",
+            "windows": "1:10868495723:web:c6b4b9a23c88110982682e"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ]
+}
