@@ -11,8 +11,8 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   final QuizRepository _quizRepository;
 
   QuizBloc({required QuizRepository quizRepository})
-      : _quizRepository = quizRepository,
-        super(const QuizState()) {
+    : _quizRepository = quizRepository,
+      super(const QuizState()) {
     on<FetchQuiz>(_onFetchQuiz);
     on<AnswerSelected>(_onAnswerSelected);
     on<NextQuestion>(_onNextQuestion);
@@ -24,16 +24,34 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     try {
       final questions = await _quizRepository.getQuizQuestions();
       if (questions.isEmpty) {
-        // Jika tidak ada soal yang kembali, anggap sebagai error
-        emit(state.copyWith(status: QuizStatus.error, errorMessage: 'Tidak ada soal kuis yang ditemukan di database.'));
-      } else {
-        emit(state.copyWith(status: QuizStatus.loaded, questions: questions));
+        emit(
+          state.copyWith(
+            status: QuizStatus.error,
+            errorMessage: 'Tidak ada soal kuis yang ditemukan.',
+          ),
+        );
+        return;
       }
+
+      // RESET state saat mulai kuis baru
+      emit(
+        QuizState(
+          status: QuizStatus.loaded,
+          questions: questions,
+          currentQuestionIndex: 0,
+          score: 0,
+          selectedAnswerIndex: null,
+          isCorrect: null,
+          errorMessage: '',
+        ),
+      );
     } catch (e) {
-      // Cetak error ke console untuk debugging
-      print("Error terdeteksi saat mengambil kuis: $e");
-      // Keluarkan state error dengan pesan yang jelas
-      emit(state.copyWith(status: QuizStatus.error, errorMessage: e.toString()));
+      emit(
+        state.copyWith(
+          status: QuizStatus.error,
+          errorMessage: 'Gagal memuat kuis: $e',
+        ),
+      );
     }
   }
 
@@ -44,22 +62,26 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     if (isCorrect) {
       newScore++;
     }
-    emit(state.copyWith(
-      status: QuizStatus.answered,
-      selectedAnswerIndex: event.selectedIndex,
-      isCorrect: isCorrect,
-      score: newScore,
-    ));
+    emit(
+      state.copyWith(
+        status: QuizStatus.answered,
+        selectedAnswerIndex: event.selectedIndex,
+        isCorrect: isCorrect,
+        score: newScore,
+      ),
+    );
   }
 
   void _onNextQuestion(NextQuestion event, Emitter<QuizState> emit) {
     if (state.currentQuestionIndex < state.questions.length - 1) {
-      emit(state.copyWith(
-        status: QuizStatus.loaded,
-        currentQuestionIndex: state.currentQuestionIndex + 1,
-        selectedAnswerIndex: null,
-        isCorrect: null,
-      ));
+      emit(
+        state.copyWith(
+          status: QuizStatus.loaded,
+          currentQuestionIndex: state.currentQuestionIndex + 1,
+          selectedAnswerIndex: null,
+          isCorrect: null,
+        ),
+      );
     } else {
       emit(state.copyWith(status: QuizStatus.completed));
     }

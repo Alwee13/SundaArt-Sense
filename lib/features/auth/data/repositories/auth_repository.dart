@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -17,10 +16,11 @@ class AuthRepository {
         _firestore = firestore ?? FirebaseFirestore.instance,
         _googleSignIn = googleSignIn ?? GoogleSignIn();
 
-  // ✅ DIBUTUHKAN OLEH AuthBloc
-  Stream<User?> get user => _firebaseAuth.authStateChanges();
+  /// Penting untuk AuthBloc kamu:
+  /// gunakan userChanges() (bukan authStateChanges()) supaya emit saat profile update.
+  Stream<User?> get user => _firebaseAuth.userChanges();
 
-  // Email/Password (dipakai AuthPage)
+  /// Email/Password Sign Up + set displayName + simpan ke Firestore
   Future<void> signUp({
     required String email,
     required String password,
@@ -30,17 +30,28 @@ class AuthRepository {
       email: email,
       password: password,
     );
-    await _createUserDocument(cred.user!, name: name);
+
+    // Set nama ke profil Auth
+    await cred.user!.updateDisplayName(name);
+    await cred.user!.reload(); // refresh user di client
+
+    // Ambil user yang sudah direfresh
+    final refreshed = _firebaseAuth.currentUser;
+    await _createUserDocument(refreshed!, name: name);
   }
 
-  Future<void> signIn({required String email, required String password}) async {
+  /// Email/Password Sign In
+  Future<void> signIn({
+    required String email,
+    required String password,
+  }) async {
     await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
   }
 
-  // ✅ Google Sign-In: Support Web & Mobile
+  /// Google Sign-In untuk Web & Mobile
   Future<void> signInWithGoogle() async {
     try {
       if (kIsWeb) {
@@ -70,15 +81,18 @@ class AuthRepository {
     }
   }
 
+  /// Logout
   Future<void> signOut() async {
     try {
-      if (!kIsWeb) await _googleSignIn.signOut();
+      if (!kIsWeb) {
+        await _googleSignIn.signOut();
+      }
     } finally {
       await _firebaseAuth.signOut();
     }
   }
 
-  // ==== Helpers ====
+  /// ===== Helpers =====
   Future<void> _createUserDocument(User user, {String? name}) async {
     final ref = _firestore.collection('users').doc(user.uid);
     final snap = await ref.get();
@@ -90,6 +104,12 @@ class AuthRepository {
         'photoURL': user.photoURL,
         'createdAt': FieldValue.serverTimestamp(),
       });
+    } else {
+      // merge displayName kalau sebelumnya null
+      await ref.set({
+        'displayName': name ?? user.displayName,
+        'photoURL': user.photoURL,
+      }, SetOptions(merge: true));
     }
   }
 
